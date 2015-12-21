@@ -19,3 +19,12 @@ This function does not handle hierarchical module names (names containing dots).
 
 
 example:
+
+import os
+import imp
+# 获取目录
+file_path = os.getcwd()
+print file_path
+file_name = ‘xxx’
+a = imp.find_module(file_name, [file_path])
+print a
