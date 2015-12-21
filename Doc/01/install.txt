@@ -1,0 +1,48 @@
+第一天学习文档
+
+
+一：安装虚拟环境
+
+1: 安装
+pip install virtualenv          
+
+2: 创建虚拟环境
+virtualenv venv             
+
+3: 进入虚拟环境
+./venv/bin/activate  或
+source   venv/bin/activate    
+
+4: 进入虚拟环境之后，就可以安装任何你需要的包，
+pip  install  包名
+
+5: 退出环境
+deactivate     
+
+
+二：快速安装包的方式
+
+1: 创建一个文件，将你需要的包写入
+cat  requirements.txt 
+Flask 
+Flask-Bootstrap 
+Flask-Moment
+Flask-Script 
+Flask-Migrate
+Flask-SQLAlchemy 
+Flask-WTF 
+MySQL-python 
+requests
+
+2: 一键安装
+pip  install -r requirements.txt  
+
+
+三： Github使用指南
+
+1: 浏览器的方式直接上传作业
+https://github.com/shengxinjing/my_blog/issues/4
+
+
+2: 命令行方式上传作用
+https://github.com/51reboot/actual_07_homework
