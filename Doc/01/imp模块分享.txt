@@ -1,0 +1,21 @@
+
+
+摘自官网
+info:
+imp.find_module(name[, path]) //传入模块名称，当前模块路径， 返回的是一个三元组，文件名，文件路径，文件类型
+Try to find the module name. If path is omitted or None, the list of directory names given by sys.path is searched, but first a few special places are searched: the function tries to find a built-in module with the given name (C_BUILTIN), then a frozen module (PY_FROZEN), and on some systems some other places are looked in as well (on Windows, it looks in the registry which may point to a specific file).
+
+Otherwise, path must be a list of directory names; each directory is searched for files with any of the suffixes returned by get_suffixes() above. Invalid names in the list are silently ignored (but all list items must be strings).
+
+If search is successful, the return value is a 3-element tuple (file, pathname, description):
+
+file is an open file object positioned at the beginning, pathname is the pathname of the file found, and description is a 3-element tuple as contained in the list returned by get_suffixes() describing the kind of module found.
+
+If the module does not live in a file, the returned file is None, pathname is the empty string, and the description tuple contains empty strings for its suffix and mode; the module type is indicated as given in parentheses above. If the search is unsuccessful, ImportError is raised. Other exceptions indicate problems with the arguments or environment.
+
+If the module is a package, file is None, pathname is the package path and the last item in the description tuple is PKG_DIRECTORY.
+
+This function does not handle hierarchical module names (names containing dots). In order to find P.M, that is, submodule M of package P, use find_module() and load_module() to find and load package P, and then use find_module() with the path argument set to P.__path__. When P itself has a dotted name, apply this recipe recursively.
+
+
+example:
