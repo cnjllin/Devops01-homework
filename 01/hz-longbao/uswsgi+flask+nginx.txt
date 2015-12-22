@@ -1,0 +1,51 @@
+step 1: 搭建基础环境
+
+#yum install python-flask
+#nginx 采取编译安装,此处省略
+#yum -y install python-devel python-setuptools libxml2-devel
+#wget http://projects.unbit.it/downloads/uwsgi-2.0.11.2.tar.gz
+#wget https://pypi.python.org/packages/source/F/Flask/Flask-0.10.1.tar.gz
+
+step 2: 安装uwsgi,flask
+install path:
+flask源码: /data/www/flask/
+uwsgi：/data/www/flask/uwsgi.ini
+
+
+#tar zxvf uwsgi-2.0.11.2.tar.gz
+#cd uwsgi-2.0.11.2
+#python setup.py install
+
+#tar zxvf Flask-0.10.1.tar.gz
+#python setup.py install
+
+step 3: 配置nginx和uwsgi,
+
+3.1 nginx 1.2 以后,加载uwsgi
+
+location / {
+    uwsgi_pass 127.0.0.1:5000;
+    include uwsgi_params;
+    uwsgi_param UWSGI_CHDIR  /data/www/flask/;
+    uwsgi_param UWSGI_SCRIPT run;
+    access_log off;
+    index  index.html index.htm;
+}
+
+
+
+3.2 flask 设置uwsgi:
+#cat /data/www/flask/uwsgi.ini
+[uwsgi]
+    socket = 0.0.0.0:5000
+    pidfile = /data/www/flask/uwsgi.pid
+    processes = 8
+    master = true
+    chdir = /data/www/flask/
+    module = run
+    callable = app
+    pythonpath = /data/www/flask
+
+启动uwsgi:
+#/usr/bin/uwsgi --ini /data/www/flask/uwsgi.ini -d /data/www/flask/uwsgi.log
+#./nginx -s reload
