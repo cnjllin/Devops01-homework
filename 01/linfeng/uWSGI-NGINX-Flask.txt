@@ -1,0 +1,38 @@
+#uWSGI + Nginx 部署 Flask Web 应用
+#参考材料：http://www.cnblogs.com/Ray-liang/p/4173923.html
+#20151223
+
+一：安装flask，部署python服务:略
+二：安装nginx：略
+###########################################################################################
+三：安装配置uWSGI
+     3.1：安装：pip install uwsgi
+	 3.2：配置主文件：
+        cat /opt/app/config.xml 
+				<uwsgi>
+					 <pythonpath>/opt/software/cmdb</pythonpath>    #flask项目根目录
+					 <module>flask_web</module>                     #启动程序文件
+					 <callable>app</callable>                       #启动程序入口
+					 <socket>127.0.0.1:5000</socket>                #监听套接字
+					 <master>true</master>
+					 <plugins>python</plugins>
+					 <processes>5</processes>
+					 <memory-report/>
+				</uwsgi>
+     3.3: 启动uwsgi服务
+	    uwsgi /opt/app/config.xml &
+###########################################################################################
+四：配置nginx支持uWSGI
+        server {
+        listen          80;
+        server_name     10.44.74.157;
+        access_log      /var/log/nginx/example_access.log;
+        error_log       /var/log/nginx/example_error.log;
+        #root           /var/www/example;
+				   location / {
+						include  uwsgi_params;
+						uwsgi_pass  127.0.0.1:5000;                    #指向uwsgi
+                              }
+                }
+五：启动nginx服务，并验证：略
+     
