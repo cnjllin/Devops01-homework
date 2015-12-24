@@ -1,0 +1,85 @@
+#2015.12.24
+#auth:xiaoluo
+
+###说明：安装环境放置在：/var/www/api 根目录下
+目录结构：
+[root@xiaoluo conf]# cd /var/www/
+[root@xiaoluo www]# ls
+api  test.py  uwsgi  uwsgi_config.xml  uwsgi.log
+
+1.下载所需要的软件包，
+wget http://nginx.org/download/nginx-1.5.9.tar.gz
+wget http://projects.unbit.it/downloads/uwsgi-2.0.4.tar.gz
+wget http://exim.mirror.fr/pcre/pcre-8.34.tar.gz
+2.编译安装
+#安装pcre ,Nginx的HTTP Rewrite模块会用到
+tar zxvf pcre-8.34.tar.gz
+cd pcre-8.34/
+./configure
+make
+make install
+#安装nginx------------------------------------------
+tar -zxvf nginx-1.5.9.tar.gz     ###nginx做口岸名单反向代理编译
+cd nginx-1.5.9
+./configure --user=nobody --group=nobody --prefix=/usr/local/nginx --with-http_stub_status_module --with-cc-opt='-O3' --with-cpu-opt=opteron
+sudo  make && sudo make install
+cd ..
+#安装uwsgi-------------------------------------------
+tar -zxvf uwsgi-2.0.4.tar.gz
+cd uwsgi-2.0.4
+python uwsgiconfig.py --build
+python setup.py install
+cd ..
+#--------------------------------------------------
+#Flask,安装方式很多:yum、apt-get、pip
+pip  install  flask
+
+3、nginx反向代理简单配置：
+
+
+ server {
+        listen       80;
+        server_name  www.test.com;
+
+        #charset koi8-r;
+        root /var/www/api;
+
+        location / {
+       uwsgi_pass 127.0.0.1:5000;
+            include uwsgi_params;
+        }
+
+4、建立uwsgi配置文件，有ini、xml等方式，这里选用xml.在根目录下创建uwsgi_config.xml文件
+<uwsgi>
+     <pythonpath>/var/www/api</pythonpath> #网站根目录
+     <module>manage</module>     #Flask的主入口文件，有些是runserver.py就互相转换
+     <callable>app</callable>   #manage入口文件里的程序入口
+     <socket>127.0.0.1:5000</socket>       #监听端口
+     <master/>
+     <processes>5</processes>                #注：跑几个线程，这里用4个线程
+     <memory-report/>
+</uwsgi>
+
+5、完成启动：
+uwsgi -x uwsgi_config.xml -d uwsgi.log
+启动nginx 测试完成
+
+
+
+二、以socket的方式反向代理:
+<uwsgi>
+     <pythonpath>/var/www/api</pythonpath> #网站根目录
+     <module>manage</module>     #Flask的主入口文件，有些是runserver.py就互相转换
+     <callable>app</callable>   #manage入口文件里的程序入口
+     <socket>/tmp/uwsgi.sock</socket>      #监听sock文件
+     <master/>
+     <processes>5</processes>                #注：跑几个线程，这里用4个线程
+     <memory-report/>
+</uwsgi>  
+
+##########nginx 简单配置：
+        location / { 
+#           uwsgi_pass 127.0.0.1:5000;  
+            include uwsgi_params;  
+            uwsgi_pass unix:/tmp/uwsgi.sock;
+        }
