@@ -1,0 +1,51 @@
+在nginx的配置文件nginx.conf中添加以下server标签。
+
+server {
+  listen  80;
+  server_name 127.0.0.1; 
+
+  location / {
+    include      uwsgi_params;
+    uwsgi_pass   127.0.0.1:5000;
+    uwsgi_param UWSGI_PYHOME /data/devops-1/flask_nginx_uwsgi; #指定虚拟环境目录
+    uwsgi_param UWSGI_CHDIR  /data/devops-1/api; #指定配置文件路径
+    uwsgi_param UWSGI_SCRIPT manage:app; 
+  }
+}
+下面是启动uwsgi的脚本
+#!/bin/bash
+
+# Check if user is root
+if [ $(id -u) != "0" ]; then
+    printf "Error: You must be root to run this script!\n"
+    exit 1
+fi
+scripts='127.0.0.1:5000 -M -p 4 -t 30 --limit-as 128 -R 10000 -d /var/log/uwsgi.log'
+case $1 in
+  start)
+    psid=`ps aux|grep "uwsgi"|egrep -v "grep|vim|start|$0"|wc -l`
+    if [ $psid -gt 0 ];then
+      echo "uwsgi is running!"
+      exit 0
+    else
+      uwsgi -s $scripts
+      sudo /etc/init.d/nginx start
+    fi
+    echo "Start uwsgi service [OK]"
+    ;;
+  stop)
+    #sleep 999999999
+    sudo /usr/bin/killall -9 uwsgi >/dev/null 2>&1 && echo "Stop uwsgi service [OK]"|| echo "Stop uwsgi service [OK]"  
+    sudo /etc/init.d/nginx stop
+    ;;
+  restart)
+     sudo /usr/bin/killall -9 uwsgi >/dev/null &&
+     sudo /etc/init.d/nginx stop && echo "Stop uwsgi service [OK]"
+    sleep 3
+    uwsgi -s $scripts
+      sudo /etc/init.d/nginx stop
+      echo "Start uwsgi service [OK]"
+    ;;
+  *)
+    echo "Usages: uwsgiserver [start|stop|restart]"
+esac
