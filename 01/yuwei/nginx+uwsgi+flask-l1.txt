@@ -1,0 +1,203 @@
+﻿centos 6.5下nginx+uwsgi+flask的运行环境搭建
+
+#搭建环境 centos 6.5x64
+
+1、安装nginx
+
+安装nginx之前先要安装gcc编译器和相关工具，使用yum安装，非常方便。
+
+yum -y install gcc gcc-c++ make autoconf automake
+nginx的一些模块需要第三方库的支持，例如gzip需要zlib，rewrite模块需要pcre库，ssl功能需要openssl库。直接使用yum安装就行了。
+
+yum -y install zlib zlib-devel openssl openssl-devel pcre pcre-devel
+前往nginx官网nginx.org下载最新的版本，笔者下载的是1.2.7的版本。
+
+cd /usr/local/src/
+wget http://nginx.org/download/nginx-1.8.0.tar.gz
+
+
+tar -zxv -f nginx-1.8.0.tar.gz
+cd nginx-1.8.0
+./configure  --prefix=/usr/local/nginx
+make  
+make install
+这里configure使用的都是默认的参数，可以根据自己的需要进行修改。可以使用./configure –help查看帮助说明。
+
+启动nginx服务器
+
+/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+其中/usr/local/nginx/sbin/nginx表示启动程序，这里用全路径更加直观，可以根据自己的习惯做软链接到系统路径。
+
+使用浏览器访问http://127.0.0.1/，如果看到Welcome to nginx!的字样，就表示安装成功了。
+
+2、安装uwsgi
+
+先安装相关依赖python-devel、setuptools，libxml2-devel，直接用yum安装。如果是自行编译安装的python，可以不用安装python-devel。
+
+yum -y install python-devel python-setuptools libxml2-devel
+前网官网http://projects.unbit.it/uwsgi/下载uwsgi。
+
+http://uwsgi-docs.readthedocs.org/en/latest/Download.html
+$ wget http://projects.unbit.it/downloads/uwsgi-2.0.11.2.tar.gz
+解压安装：
+
+tar -zxv -f uwsgi-2.0.11.2.tar.gz
+cd uwsgi-2.0.11.2
+python setup.py install
+
+
+3、安装flask
+
+
+
+http://flask.pocoo.org/
+wget https://pypi.python.org/packages/source/F/Flask/Flask-0.10.1.tar.gz --no-check-certificate
+解压安装
+
+tar -zxv -f Flask-0.10.1.tar.gz
+cd Flask-0.10.1
+python setup.py install
+新建flask项目，就一个程序文件app.py，内容如下：
+
+
+from flask import Flask
+apptest = Flask(__name__)
+
+@apptest.route("/")
+def hello():
+    return "Hello World!"
+
+if __name__ == "__main__":
+    apptest.run()
+确保用flask自带的web服务器能够运行。
+
+4、配置nginx和uwsgi
+4.1、端口方式
+httpd.conf 端口改为81 
+uwsgi在nginx 是标准模块，所以不需要安装。编辑nginx的配置文件，使其加载uwsgi。
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+		改为
+
+        location / {
+            include uwsgi_params;
+            uwsgi_pass 127.0.0.1:3031;
+            #uwsgi_pass unix:/tmp/uwsgi.sock;
+            root   html;
+            index  index.html index.htm;
+        }
+
+修改完成后可以测试下配置文件是否没有错误。
+
+/usr/local/nginx/sbin/nginx -t -c /usr/local/nginx/conf/nginx.conf
+/usr/local/nginx/sbin/nginx &
+/usr/local/nginx/sbin/nginx -s reload
+
+##ps -ef | grep nginx ##笔者电脑上是13367，然后重新启动
+#kill -HUP 13367
+
+
+在flask的项目下新建一个配置文件app_config.xml，用来设置uwsgi相关的参数，一会uwsgi在启动时需要指明这个配置文件，内容如下：
+[root@linux-node1 nginx-uwsgi-flask]# cat app_config.xml 
+<uwsgi>
+     <pythonpath>/root/python/devops/l1/nginx-uwsgi-flask</pythonpath>
+     <module>app</module>
+     <callable>apptest</callable>
+     <socket>127.0.0.1:3031</socket>
+     <master/>
+     <processes>4</processes>
+     <memory-report/>
+</uwsgi>
+其中个参数表示：
+
+pythonpath表示项目目录
+module表示项目启动模块，如上例为app.py，这里就为app
+callable表示flask项目的实例名称，上例代码中app = Flask(__name__)，所以这里为app
+socket表示和nginx通信的地址和端口，和nginx配置里的uwsgi_pass一致。
+processes表示开启多少个子进程处理请求。
+启动uwsgi：
+
+/usr/bin/uwsgi -x /root/python/devops/l1/nginx-uwsgi-flask/app_config.xml
+其中-x参数表示加载的配置文件路径。
+
+这时候在浏览器里访问http://192.168.1.22:81/，看到输出Hello World!就大功告成了。
+
+小提示：如果需要让uwsgi以守护进程的方式运行，使用-d参数并指明日志路径就可以了。
+
+mkdir /var/log/uwsgi/
+/usr/bin/uwsgi -x /root/python/devops/l1/nginx-uwsgi-flask/app_config.xml -d /var/log/uwsgi/uwsgi.log
+小结
+
+nginx和uwsgi之间的通信这里是使用端口进行通信，也可以使用socket文件。uwsgi的配置也可以使用其他的配置文件，不一定要用xml，这里就不再说明了。有什么一问题可以来信交流。
+
+
+
+
+启动方式
+#带配置文件 ok
+
+/usr/bin/uwsgi -x /root/python/devops/l1/nginx-uwsgi-flask/app_config.xml -d /var/log/uwsgi/uwsgi.log
+
+#无配置文件  端口           o                                                                           #定义的类 -w 
+uwsgi --http-socket 127.0.0.1:3031 --wsgi-file /root/python/devops/l1/nginx-uwsgi-flask/app.py -w app  -M -p 4 -t 30 --limit-as 128 -R 10000 -d uwsgi.log
+/usr/local/nginx/sbin/nginx -s reload
+
+
+可以通过http://192.168.1.5:81/ 访问
+显示Hello World!
+
+
+
+注意：
+uwsgi 的参数： 
+    -M 开启Master进程 
+    -p 4 开启4个进程 
+    -s 使用的端口或者socket地址 
+    -d 使用daemon的方式运行, 注意, 使用-d后, 需要加上log文件地址, 比如-d /var/log/uwsgi.log 
+    -R 10000 开启10000个进程后, 自动respawn下 
+    -t 30 设置30s的超时时间, 超时后, 自动放弃该链接 
+    -limit-as 32 将进程的总内存量控制在32M 
+    -x  使用配置文件模式
+
+4.2 sock文件方式
+
+/root/python/devops/l1/nginx-uwsgi-flask/app_config_sock.xml
+
+
+cat app_config_sock.xml 
+<uwsgi>
+     <pythonpath>/root/python/devops/l1/nginx-uwsgi-flask</pythonpath>	##网站根目录
+     <module>app</module>						#Flask的主入口文件名（去掉.py），有些是runserver.py就互相转换
+     <callable>apptest</callable>					#manage入口文件里的程序入口，就是apptest = Flask(__name__)
+     <socket>/tmp/uwsgi.sock</socket>					#监听sock文件
+     <master/>								#主进程模式
+     <processes>4</processes>						#跑几个线程，这里用4个线程					
+     <memory-report/>
+</uwsgi>
+
+
+
+
+
+
+#nginx 配置：
+	location / { 
+		include uwsgi_params;
+    		#uwsgi_pass 127.0.0.1:3031;
+    		uwsgi_pass unix:/root/python/devops/l1/nginx-uwsgi-flask/uwsgi.sock;
+    		root   html;
+    		index  index.html index.htm;
+
+        	}
+
+#sock启动
+/usr/bin/uwsgi -x /root/python/devops/l1/nginx-uwsgi-flask/app_config_sock.xml -d /var/log/uwsgi/uwsgi.log
+
+可以通过http://192.168.1.5:81/ 访问
+显示Hello World!
+
+#1855
+
+
