@@ -1,0 +1,27 @@
+机器从采购到提供服务
+1 采购
+	1.1 业务线或运维提需求
+		IDC, 业务线, hostname, ip
+	1.2 机器上架
+		远程管理卡
+2 装系统
+	2.1 pxe + kickstart + dhcp + sftp
+		获取这台机器的ip, hostname,
+		安装salt, 
+		系统级别的初始化 -> salt-call state.sls init
+			DNS
+			堡垒机
+			内核参数
+			resolve.conf
+			yum
+			添加用户 ， zabbix 550 550
+			常用软件包，
+			devops-agent,
+			zabbix-agent
+3 提供对外的服务
+	针对业务初始化
+		web环境
+		代码，同时把这台机器加入到自动上线的分发列表里
+		软链，目录
+	把这个机器加入lvs, haproxy, reload
+
