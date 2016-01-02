@@ -1,0 +1,72 @@
+python函数不定长参数*arg,**kwargs的用法
+     当函数的参数不确定时，可以使用*args 和**kwargs，*args 没有key值可以理解为列表，**kwargs有key值key=value，可以理解为字典。
+
+一：＊args ——传入不定长的无key值
+
+第一种方式：function使用 *args,  调用时直接赋值
+function
+	def fun_args(farg, *args):
+		print "arg:", farg
+	   # print  "another %s:" % args[0]        #取值的方式和列表一样
+	   # print  "another %s:" % args[1]
+		for value in args:                               ＃不确定值有多少时，用循环比较合适
+			print "another arg:", value
+
+	fun_args(1, "two", 3)                              # 函数调用时直接赋值
+
+result：
+	arg: 1
+	another arg: two
+	another arg: 3
+
+第二种方法：function和调用时都使用 *args——更常用
+function
+	def fun_args(arg1, *args):
+		print "arg1:", arg1
+		print "arg2:", args[0]
+		print "arg3:", args[1]
+
+	data = ["two", 3] #list
+	fun_argsl(1, *data)     #函数调用时传入一个现有的列表，data前面必须有＊，否则就会把列表当一个参数传入，
+
+result
+	arg1: 1
+	arg2: two
+	arg3: 3
+
+二：**kwargs——传入不定长的key/value值
+
+第一种方式： function使用**kwargs, 函数调用时候，直接赋值
+function
+	def fun_kwargs(farg, **kwargs):
+		print "arg:", farg
+		for key in kwargs:
+			print "another keyword arg: %s: %s" % (key, kwargs[key])
+
+	fun_kwargs(farg=1, myarg2="two", myarg3=3)    #调用时直接k=v赋值 
+
+result
+	arg: 1
+	another keyword arg: myarg2: two
+	another keyword arg: myarg3: 3
+
+第二种方法：function和调用时都使用 **kwargs——更常用
+function
+	def fun_kwargs(arg1, **kwargs):
+		print "arg1:", arg1
+		print "arg2:", kwargs.get('arg2')      
+		print "arg3:", kwargs['arg3']               #参数key已知且参数比较少时，可以这样像字典一样取值
+		
+		#for key in kwargs:                         ＃参数比较多，且key值也不确定时候，用循环的方式更佳    
+			#print  "another keyword arg: %s: %s" % (key, kwargs[key])    
+
+	kwargs = {"arg3": 3, "arg2": "two"} # dict
+	fun_kwargs(1, **kwargs)      #函数调用时传入一个现有的列表，data前面必须有**，否则就会把字典本身当一个参数传入，输出的结果就是{"arg3": 3, "arg2": "two"} 
+
+result
+	arg1: 1
+	arg2:"two"
+	arg3:3
+
+参考博文
+	http://blog.csdn.net/chenjinyu_tang/article/details/8136841      
