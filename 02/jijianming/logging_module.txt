@@ -1,0 +1,17 @@
+#logging模块
+
+if __name__ == '__main__':
+    import logging
+    logging.basicConfig(level=logging.DEBUG,
+                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                datefmt='%a, %d %b %Y %H:%M:%S',
+                filename='manager.log',
+                filemode='w')
+
+    logging.debug(manager.run())
+
+这样启动 python manager.py runserver 日志就会输出到manager.log文件中，格式为
+cat manager.log 
+Wed, 06 Jan 2016 15:04:47 _internal.py[line:87] WARNING  * Debugger is active!
+Wed, 06 Jan 2016 15:04:47 _internal.py[line:87] INFO  * Debugger pin code: 249-481-783
+Wed, 06 Jan 2016 15:04:54 _internal.py[line:87] INFO 127.0.0.1 - - [06/Jan/2016 15:04:54] "POST /api HTTP/1.1" 200 -

@@ -1,5 +1,30 @@
-#/usr/bin/env python
-#_*_coding:utf8_*_
+#!/usr/bin/env python
+# coding:utf-8
+import os
+from app import create_app, db
+from flask.ext.script import Manager, Shell
+from flask.ext.migrate import Migrate, MigrateCommand
+from app.models import switch_pirpost
+import logging
+from flask.ext.sqlalchemy import SQLAlchemy
+app = create_app(os.getenv('FLASK_CONFIG') or 'development')
+manager = Manager(app)
+migrate = Migrate(app, db)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:123456@127.0.0.1/cmdb'
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+db = SQLAlchemy(app)
+def make_shell_context():
+    return dict(app=app, db=db, switch_pirpost=switch_pirpost)
+manager.add_command('shell', Shell(make_context=make_shell_context))
+manager.add_command('db', MigrateCommand)
+#日志模块
+logging.basicConfig(level=logging.DEBUG,
+                format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                datefmt='%a, %d %b %Y %H:%M:%S',
+                filename='manager.log',
+                filemode='w')
+
+
 class User(db.Model):
 	'''
 		用户信息表
@@ -243,3 +268,5 @@ class Switch(db.Model):
 
 		
 
+if __name__ == "__main__":
+   logging.debug(manager.run())
