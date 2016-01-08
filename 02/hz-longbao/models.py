@@ -15,6 +15,15 @@ class Serverinfo(db.Model):
     server_type         = db.Column(db.String(200),default='11')
 
 class User(db.Model):
+    """
+    用户信息表,表字段如下,
+    用户名(拼音) name
+    用户名(中文) username
+    email邮件   email
+    所在部门     department_id
+    是否是leader is_leader
+    手机号     phone
+    """
     __tablename__       = "user"
     id                  = db.Column(db.Integer,autoincrement=True,primary_key=True)
     name                = db.Column(db.String(50),nullable=False)
@@ -29,6 +38,11 @@ class User(db.Model):
         return '<User % r>' % self.name
 
 class Depart(db.Model):
+    """
+    部门信息表,表字段如下,
+    部门名称  department_name
+    上级部门  superior
+    """
     __tablename__       = "depart"
     id                  = db.Column(db.Integer,autoincrement=True,primary_key=True)
     department_name     = db.Column(db.String(50))
@@ -39,6 +53,18 @@ class Depart(db.Model):
 
 
 class Idc(db.Model):
+    """
+    IDC 信息表,表字段如下,
+    IDC字母简称  name
+    idc名称(中文) idc_name
+    IDC详细地址  address
+    客服电话    phone
+    邮件地址    email
+    IDC接口人    user_interface
+    接口人电话 user_phone
+    实际机柜数 rel_cabinet_num
+    合同机柜数 pact_cabinet_num
+    """
     __tablename__       = "idc"
     id                  = db.Column(db.Integer,autoincrement=True,primary_key=True)
     name                = db.Column(db.String(10),nullable=False)
@@ -54,6 +80,11 @@ class Idc(db.Model):
         return '<idc %r>' % self.idc_name
 
 class cabinet(db.Model):
+    """
+    机柜名  name
+    所处的机房  idc_id
+    机柜功率  power
+    """
     __tablename__       = "cabinet"
     id                  = db.Column(db.Integer,autoincrement=True,primary_key=True)
     name                = db.Column(db.String(30),nullable=False)
