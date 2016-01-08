@@ -3,6 +3,7 @@
 
 
 import os
+import imp
 
 
 class AutoLoad(object):
@@ -17,10 +18,23 @@ class AutoLoad(object):
 
     def _load_module(self):
         ret = False
-        print os.listdir(self.module_dir)
-
-
-
+        for filename in os.listdir(self.module_dir):
+            if filename.endswith(".py"):
+                #module_name = filename.split('.')[0]
+                module_name = filename.rstrip(".py")
+                if module_name == self.module_name:
+                    fp, filename, desc = imp.find_module(module_name, [self.module_dir])
+                    if not fp:
+                        continue
+                    try:
+                        self.module = imp.load_module(module_name, fp, filename, desc)
+                        ret = True
+                    except Exception,e:
+                        fp.close()
+                    break
+            else:
+                print "not found"
+        return ret
 
 
 if __name__ == "__main__":
