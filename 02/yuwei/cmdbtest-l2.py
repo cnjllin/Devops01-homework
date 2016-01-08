@@ -190,7 +190,7 @@ class Switch(db.Model):
     last_op_people = db.Column(db.Integer)
     switch_port_nums = db.Column(db.Integer)
     def __repr__(self):
-        return '<Server %r>' % self.switch_name
+        return '<Switch %r>' % self.switch_name
 
 if __name__ == "__main__":
     manager.run()
