@@ -5,6 +5,7 @@
 
 """
 没有更多的时间去做作业，也就趁着周五闲的时候写了几乎一天。剩余的作业暂时还没有写。
+参考文档：https://pypi.python.org/pypi/psutil
 """
 
 import psutil
