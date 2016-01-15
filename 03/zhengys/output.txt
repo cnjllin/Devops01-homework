@@ -1,0 +1,35 @@
+[root@develop ~]# python hostinfo.py 
+{
+    "UUID": "423E728B-49D2-7DED-8C9D-06FFD065975F", 
+    "production_date": "2014-14-04", 
+    "ip": {
+        "eth0": "192.168.10.80"
+    }, 
+    "/boot": {
+        "total": "13.57g", 
+        "used": "4.81g", 
+        "free": "8.07g"
+    }, 
+    "hostname": "develop", 
+    "system": "centos 6.7 Final", 
+    "/": {
+        "total": "13.57g", 
+        "used": "4.81g", 
+        "free": "8.07g"
+    }, 
+    "Product_Name": "VMware Virtual Platform", 
+    "SN": "VMware-42 3e 72 8b 49 d2 7d ed-8c 9d 06 ff d0 65 97 5f", 
+    "memory": {
+        "used": "3.55g", 
+        "total": "3.74g", 
+        "percent": 20.600000000000001, 
+        "free": "199.19m"
+    }, 
+    "/mnt": {
+        "total": "13.57g", 
+        "used": "4.81g", 
+        "free": "8.07g"
+    }, 
+    "cpu": 1, 
+    "Manufacturer": "VMware, Inc."
+}
