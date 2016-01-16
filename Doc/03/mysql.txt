@@ -1,0 +1,166 @@
+1 基本概念
+	数据（data)
+		数据是数据库中存储的基本对象
+		人:  男，1990, 北京，计算机，
+	数据库(database)
+		存储数据的仓库
+	数据库管理系统(DBMS)
+		提供数据定义语言（DDL）
+		提供数据操作语言（DML）
+	数据系统(DBS)
+		
+2 mysql的基本操作
+	1 数据的起动与停止
+	2 通过命令行连接mysql
+	2 mysql程序常用命令
+		use 'dbname'
+		show database
+		show tables;
+		\c
+		\h
+		退出mysql
+		\s
+3 mysql数据类型
+	数值型，   整型，浮点型
+		TINYINT
+		SMALLINT
+		MEDIUMINT
+		int	*   4  
+		BIGINT
+
+		float   *   4
+		double
+		decimal
+		
+	字符串，
+		char			定长   char(5)      0~255
+		varchar   *		不定长 varchar(255)	0~255
+		tinyblob	小二进制   tinyblob
+		mediumblob	中等二进制 mediumblob
+		tinytext	非常小的文本 tinytext
+		text	 *	小文本
+		mediumtext	中等
+		longtext	大文本
+		enum		enum("男", "女")      最大65535
+		set		set("val1", "val2")	最大64
+	日期和时间值
+		date		YYYY-MM-DD
+		time		hh:mm:ss
+		datetime	YYYY-MM-DD hh:mm:ss
+		timestramp	YYYYMMDDhhmmss
+		year		yyyy
+		
+	NULL值
+创建表
+create table reboot(
+id int auto_increment primary key,
+name varchar(20) not null,
+age int(3) unsigned default 1
+);
+
+插入一条记录
+insert into reboot (name,age) value("wd",15);
+多条
+insert into reboot (name, age) values ("wd1",17),('wd2',18);
+不指字段
+insert into reboot value(6,'rock1',20);
+
+
+4 数值列的属性
+	auto_increment   自动增加
+	unsigned	 无符号
+	null		 为空
+	not null	不为空
+	# 创建一张表
+	creat table test(
+		id int(10) auto_increment default '11' not null,
+	)
+5 字符串列类型的属性
+	binary
+	not null, null
+	default
+
+6 mysql 运算符
+	算数
+		mysql> select 1+2, 3-2,4/2;
+	比较
+	逻辑
+	位运算符
+
+		select 10 between 10 and 100;
+		select 'hello' like "%ll%";
+
+7 数据库中的通配符
+	%    任意长度的字符串
+	_     任意单个字符
+
+
+
+8 SQL语句
+	DDL	用于管理数据对象
+	DML 	insert,update,delete,select
+	DQL	select
+	DCL	grant,revoke, commit,collback
+
+8.1 创建数据库
+	create database 数据库名
+
+8.2 创建数据表
+	create table 表名(
+		列名 列类型 [列的完整性约束],
+		列名 列类型 [列的完整性约束],
+		列名 列类型 [列的完整性约束],
+		...
+	)
+常见的完整性约束
+	primary key
+	unique
+	not null 
+	auto_increment
+	default ''
+	index
+	key
+
+8.3 表/库常用操作
+	show databases;
+	show tables;
+使用数据库
+	use 数据库名
+显示表结构
+	describe 表名
+	desc 表名
+删除表
+	drop table [is exists] 表名
+
+8.4 更改表结构
+	alter table 表名 action
+	action有：
+		add 列名 （建表语句） (first|after 列名)
+			alter table reboot add email varchar(32) after name;
+		add primary key (列名)
+		alter 列名 set default 默认值
+			alter table reboot alter age set default 10;
+		change (modify) 列名 <建表语句>(first|after)
+		drop 列名
+		drop primary key
+		drop index 索引名
+		rename as 新表名
+		
+8.5 插入记录
+	insert into 表名 （字段名,字段名...） values （字段值，字段值)
+8.6 更改记录
+	update 表名 set 列名=值 where 子句;
+		update reboot set email='rock@reboot.com' where id = 2;
+		一定要跟where条件
+8.7 删除
+	delete from 表名 where 子句
+	truncate 表名
+8.8 查询
+	select 字段名，字段名,... from 表名 where 子句 group by 子句 having 子句 order by 子句 limit 子句 desc(asc)
+	
+	order by 对结果进行分组
+	having 对分组后的结果进行条件限制
+	order by 排序， desc asc
+	limit 限制结果数目
+	
+
