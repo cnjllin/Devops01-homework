@@ -38,7 +38,7 @@ def get_cpu():
 
 def get_memory():
     '''
-    获取本地磁盘的总共、使用、剩余空间量
+    获取本地内存的总共、使用、剩余空间量
     '''
     memorys = {}
     token = psutil.virtual_memory()
