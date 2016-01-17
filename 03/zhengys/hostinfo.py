@@ -2,6 +2,7 @@
 #coding:utf8
 #Author:zhengys
 #Finsh:2016-01-15
+#update:2016-01-17
 
 """
 参考文档：https://pypi.python.org/pypi/psutil
