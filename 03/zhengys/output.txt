@@ -1,0 +1,37 @@
+# 脚本执行输出结果
+
+{
+    "UUID": "564DAC54-6A7F-0A62-9FE5-409333BF0F87", 
+    "production_date": "2015-02-07", 
+    "ip": {
+        "eth0": "192.168.1.103"
+    }, 
+    "hostname": "DevOps", 
+    "system": "centos 6.5 Final", 
+    "Product_Name": "VMware Virtual Platform", 
+    "SN": "VMware-56 4d ac 54 6a 7f 0a 62-9f e5 40 93 33 bf 0f 87", 
+    "memory": {
+        "total": "1.83g", 
+        "used": "222.41m", 
+        "free": "1.61g"
+    }, 
+    "disk": {
+        "/boot": {
+            "total": "17.23 g", 
+            "used": "1.60 g", 
+            "free": "14.76 g"
+        }, 
+        "/51reboot": {
+            "total": "17.23 g", 
+            "used": "1.60 g", 
+            "free": "14.76 g"
+        }, 
+        "/": {
+            "total": "17.23 g", 
+            "used": "1.60 g", 
+            "free": "14.76 g"
+        }
+    }, 
+    "cpu": 1, 
+    "Manufacturer": "VMware, Inc."
+}
