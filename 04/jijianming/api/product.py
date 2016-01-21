@@ -1,9 +1,15 @@
 #_*_coding:utf-8_*_
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 from app.models import db,Product
 from app.utils import *
 def create(**kwargs):
     check_field_exists(Product,kwargs,[0])
-    if kwargs.get('pid',0) != 0:
+    pid = kwargs.get('pid',0)
+    if isinstance(pid,list):
+        pid = int(pid[0])
+    if pid != 0:
         check_value_exists(Product,'id',kwargs.get('pid',None))
     obj = Product(**kwargs)
     db.session.add(obj)
