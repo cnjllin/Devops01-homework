@@ -1,0 +1,106 @@
+# coding:utf-8
+from app.models import db,Status
+import inspect
+def create(**kwargs):
+    #1获取参数
+    #print dir(Status.phone)
+    #print "data"
+    #print data
+    for field in kwargs.keys():
+        if not hasattr(Status, field):
+            #验证字段是否存在
+            raise Exception("params error")
+        if kwargs.get(field, None):
+           #验证字段是否none
+            raise Exception("{0} 不能为空".format(field))
+        print "field"
+        print field
+    #2处理数据
+    #print inspect.getmembers(Status, predicate=inspect.is)
+    #return 1
+    #print kwargs
+    #3实例化idc
+    idc = Status(**kwargs)
+    #4插入到数据库
+    db.session.add(idc)
+    db.session.commit()
+    return idc.id
+
+#查询
+def get(**kwargs):
+    output = kwargs.get('output', [])
+#    output = ['name','phone']
+    print output
+    limit = kwargs.get('limit', 10)
+    order_by = kwargs.get('order_by', 'id desc')
+
+    if not isinstance(output, list): #判断列表
+        raise Exception("output1必须为列表")
+
+    for field in output:
+        if not hasattr(Status, field):
+            #raise Exception("{0}这个输出字段不存在".format(field))
+            raise Exception("output2这个输出字段不存在".format(field))
+    
+    data = db.session.query(Status).order_by(order_by).limit(limit).all()
+    #                      表     排序
+    db.session.close()
+    #print ret
+    ret = []
+    
+
+    for obj in data:
+        if output:
+            tmp = {}
+            for f in output:
+                tmp[f] = getattr(obj, f)
+            ret.append(tmp)
+        else:
+        #obj.append(obj.__dict__)
+            tmp  = obj.__dict__
+            tmp.pop('_sa_instance_state')
+            ret.append(tmp)
+    print "output"
+    print output
+    print "tmp"
+    print tmp
+    print ret
+    return ret
+
+
+
+#update
+def update(**kwargs):
+    data = kwargs.get('data', {})
+    where = kwargs.get('where', {})
+
+    print data
+    print where
+    #验证传入的信息
+    if not data:
+        raise Exception("没有需要的")
+
+    for field in data.keys():
+        if not hasattr(Status, field):
+            raise Exception("需要更新的{0}这个字段不存在".format(field))
+
+
+    if not where:
+        raise Exception("需要提供where条件")
+ 
+    if where.get('id', None) is None:
+        raise Exception("需要提供id作为条件")
+
+    try:
+        id = int(where['id'])
+        if id <= 0:
+            raise Exception("条件id的值不能为负数")
+
+    except ValueError:
+        raise Exception("条件id的值必须为int")
+
+
+    ret = db.session.query(Status).filter_by(**where).update(data)
+    db.session.commit()
+    print ret
+    return ret 

@@ -1,0 +1,39 @@
+# coding:utf-8
+
+
+def check_field_exists(obj, data, field_none=[]):
+    #验证字段是否合法
+    #验证字段不能为空
+    #data需要验证的数据
+    #field_none 可以为空字段
+
+    for field in data.keys():
+        if not hasattr(obj, field):
+            #验证字段是否存在
+            raise Exception("params error")
+        if not data.get(field, None):  #空的也都是假的，所以把not放前面
+           #验证字段是否none
+            if data[field] not in field_none:
+                raise Exception("{} 不能为空")
+
+
+
+def process_result(data, output):
+    black = ["_sa_instance_state"]
+    ret = []
+    for obj in data:
+        if output:
+            tmp = {}
+            for f in output:
+                tmp[f] = getattr(obj, f)
+            ret.append(tmp)
+        else:
+            tmp  = obj.__dict__
+            for p in black:#可能多个
+                try:
+                    tmp.pop(p)
+                except:
+                    pass
+            #tmp.pop('_sa_instance_state')
+            ret.append(tmp)
+    return ret
