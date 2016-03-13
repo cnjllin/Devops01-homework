@@ -1,0 +1,7 @@
+common下的zabbix.py主要负责绑定模板的操作，
+	开始的时候，link_template主要以
+		data = {
+			'hostid':hostid;
+			templates:templateid;
+	}就和create_zabbix_host一样直接传出一个data，但是只能实现一台机器的绑定，最后看着老师的例子改了下。
+main下的zabbix.py是个接口
